@@ -69,5 +69,332 @@ body, html {
   <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button">PRICING</a>
   <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button">CONTACT</a>
 </nav>
+   
+    
+<!-- Calendar -->
+<script src="https://www.gstatic.com/firebasejs/5.3.0/firebase.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+  var config = {
+    apiKey: "AIzaSyD4PwXnI0T0eFlGvmaGgF19gjfswivH6Ac",
+    authDomain: "accentus-dee55.firebaseapp.com",
+    databaseURL: "https://accentus-dee55.firebaseio.com",
+    projectId: "accentus-dee55",
+    storageBucket: "accentus-dee55.appspot.com",
+    messagingSenderId: "854806439964",
+    clientId: "854806439964-1noaeok334ps294mfc8l2jk1r281qs4f.apps.googleusercontent.com",
+    scopes: [
+      "email",
+      "profile",
+      "https://www.googleapis.com/auth/calendar"
+    ],
+    discoveryDocs: [
+      "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+    ]
+  };
+
+$(document).ready(function() {
+  firebase.initializeApp(config);
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+       setLogin(user);
+    }
+  });
+});
+
+  function setLogin(user) {
+    var newContent = `
+      <div class="text-align-center">
+        <h2>Welcome, ${user.displayName}!</h2>
+        <h3>Select your college below to add key dates for the application process to your calendar.</h3>
+        <select id="collegeList">
+          <option value="1">Adelphi University</option>
+          <option value="2">Agnes Scott College</option>
+          <option value="3">University of Alabama</option>
+          <option value="4">University of Alaska</option>
+          <option value="5">Albion College</option>
+        </select>
+        <button type="input" onclick="addApplicationEvents()">Add Events</button>
+        <div id="googleCalendar">
+          <iframe src="https://calendar.google.com/calendar/embed?src=${user.email}&ctz=America%2FNew_York" 
+          style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        </div>
+      </div>
+    `;
+    var googleContent = document.getElementById(
+      "block-7a3e7a6149e5281a50ab"
+    ).innerHTML = newContent;
+  }
+  function googleSignIn() {
+    firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('https://www.googleapis.com/auth/calendar');     
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+        sessionStorage.setItem("accessToken", result.credential.accessToken);
+      }).catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        var email = error.email;
+        var credential = error.credential;
+      });
+    }
+    sessionStorage.setItem("userEmail", user.email);
+    setLogin(user);
+    });
+  }
+  function addApplicationEvents() {
+    var selectedCollege = document.getElementById("collegeList");
+    var college = selectedCollege.options[selectedCollege.selectedIndex].text;
+    var events = [];
+    switch(college) {
+      case "Adelphi University":
+        events = [
+          {
+            'summary': 'Early Action',
+            'description': 'If you want to get a head start, now is your chance...',
+            'start': {
+                'dateTime': '2018-12-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-12-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Priority Deadline',
+            'description': 'This is it!',
+            'start': {
+                'dateTime': '2019-03-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2019-03-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+           {
+            'summary': 'Space-Available Basis',
+            'description': 'If you want to get a head start, now is your chance...',
+            'start': {
+                'dateTime': '2018-12-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-12-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          }
+        ]
+        break;
+      case "Agnes Scott College":
+        events = [
+          {
+            'summary': 'Early Decision',
+            'description': 'Binding. ',
+            'start': {
+                'dateTime': '2018-11-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-11-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Regular Decision',
+            'description': 'This is it!',
+            'start': {
+                'dateTime': '2019-05-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2019-05-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          }
+        ]
+        break;
+      case "University of Alabama":
+        events = [
+          {
+            'summary': 'Scholarship Deadlines',
+            'description': 'Opens. Must already have been accepted. ',
+            'start': {
+                'dateTime': '2018-12-15T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-12-15T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Test Scores',
+            'description': 'Both ACT and SAT accepted.',
+            'start': {
+                'dateTime': '2019-04-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2019-04-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          }
+        ]
+        break;
+     case "University of Alaska":
+        events = [
+          {
+            'summary': 'Application Opens',
+            'description': 'Applications beginning to be accepted ',
+            'start': {
+                'dateTime': '2018-06-01T10:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-06-01T10:00:01-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Application Closes',
+            'description': 'Final day to submit application. ',
+            'start': {
+                'dateTime': '2018-07-15T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-07-15T12:00:01-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          }
+        ]
+        break;
+   	 case "Albion College":
+        events = [
+          {
+            'summary': 'Early Action',
+            'description': 'Non-binding. ',
+            'start': {
+                'dateTime': '2018-12-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2018-12-01T12:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Financial Aid',
+            'description': 'FAFSA priority filing deadline. ',
+            'start': {
+                'dateTime': '2019-02-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2019-02-01T12:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          },
+          {
+            'summary': 'Scholarships',
+            'description': 'Admission application deadline for scholarship priority. ',
+            'start': {
+                'dateTime': '2019-02-01T11:00:00-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'end': {
+                'dateTime': '2019-02-01T12:00:01-04:00',
+                'timeZone': 'America/New_York'
+            },
+            'reminders': {
+                'useDefault': true,
+            }
+          }
+        ]
+        break;
+    }
+    /*
+    gapi.load('client', function() {
+    gapi.client.init({
+          apiKey: config.apiKey,
+          clientId: config.clientId,
+          discoveryDocs: config.discoveryDocs,
+          scope: config.scopes.join(" ")
+        })
+        // Loading is finished, so start the app
+        .then(function() {
+          // Make sure the Google API Client is properly signed i
+          firebase.auth().currentUser.getIdToken();
+            events.forEach(function(calendarEvent) {
+                var request = gapi.client.calendar.events.insert({
+                    'calendarId': 'primary',
+                    'resource': calendarEvent
+                });
+
+                request.execute();
+            });
+        });
+    });*/
+    events.forEach(function(calendarEvent) {
+      $.ajax({
+        method: "POST",
+        url: "https://www.googleapis.com/calendar/v3/calendars/primary/events?&key=" + config.apiKey,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(calendarEvent),
+        headers: {"Authorization": "Bearer " + sessionStorage.getItem("accessToken")},
+        async: false
+      });
+    });
+    alert(`Deadlines for the ${college} application process have been added to your calendar.`)
+    var email = sessionStorage.getItem("userEmail");
+    var newContent = `
+      <iframe src="https://calendar.google.com/calendar/embed?src=${email}&ctz=America%2FNew_York" 
+      style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    `;
+    var googleContent = document.getElementById(
+      "googleCalendar"
+    ).innerHTML = newContent;
+    }
+</script>  
+    
+    
 </body>
 </html>
